@@ -7,36 +7,39 @@ import (
 	"strings"
 	"time"
 
+	"github.com/EthanWalker10/smartmall/user_srv/global"
 	"github.com/EthanWalker10/smartmall/user_srv/model"
+	"github.com/EthanWalker10/smartmall/user_srv/proto"
 	"github.com/anaskhan96/go-password-encoder"
 	"github.com/golang/protobuf/ptypes/empty"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
-
-	""
 )
 
 type UserServer struct{}
 
-func ModelToRsponse(user model.User) proto.UserInfoResponse{
-	//在grpc的message中字段有默认值，你不能随便赋值nil进去，容易出错
+// 由于 proto.UserInfoResponse 中包含锁, 直接返回结构体变量副本会报错, 所以需要使用指针
+func ModelToRsponse(user model.User) *proto.UserInfoResponse{
+	//在grpc的message中字段有默认值，不能随便赋值nil进去，容易出错
 	//这里要搞清， 哪些字段是有默认值
-	userInfoRsp := proto.UserInfoResponse{
-		Id:       user.ID,
+	userInfoRsp := &proto.UserInfoResponse{
+		Id:       uint64(user.ID),
 		PassWord: user.Password,
 		NickName: user.NickName,
 		Gender: user.Gender,
 		Role: int32(user.Role),
 		Mobile: user.Mobile,
 	}
+	// user.Birthday 是 *time.Time 类型，可以为 nil; 如果给 userInfoRsp 中的字段赋 nil, 会报错
 	if user.Birthday != nil {
 		userInfoRsp.BirthDay = uint64(user.Birthday.Unix())
 	}
 	return userInfoRsp
 }
 
+//分页函数, 指示从 offset 偏移量开始，取 pageSize 条数据
 func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 	return func (db *gorm.DB) *gorm.DB {
 		if page == 0 {
@@ -55,6 +58,7 @@ func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+// 分页查询
 func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*proto.UserListResponse, error){
 	//获取用户列表
 	var users []model.User
@@ -70,7 +74,7 @@ func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*pro
 
 	for _, user := range users{
 		userInfoRsp := ModelToRsponse(user)
-		rsp.Data = append(rsp.Data, &userInfoRsp)
+		rsp.Data = append(rsp.Data, userInfoRsp)
 	}
 	return rsp, nil
 }
@@ -87,7 +91,7 @@ func (s *UserServer) GetUserByMobile(ctx context.Context, req *proto.MobileReque
 	}
 
 	userInfoRsp := ModelToRsponse(user)
-	return &userInfoRsp, nil
+	return userInfoRsp, nil
 }
 
 func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*proto.UserInfoResponse, error){
@@ -102,7 +106,7 @@ func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*pr
 	}
 
 	userInfoRsp := ModelToRsponse(user)
-	return &userInfoRsp, nil
+	return userInfoRsp, nil
 }
 
 func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) (*proto.UserInfoResponse, error){
@@ -127,7 +131,7 @@ func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 	}
 
 	userInfoRsp := ModelToRsponse(user)
-	return &userInfoRsp, nil
+	return userInfoRsp, nil
 }
 
 func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) (*empty.Empty, error){

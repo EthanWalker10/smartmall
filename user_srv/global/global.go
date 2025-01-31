@@ -1,8 +1,8 @@
 package global
 
 import (
+	"github.com/EthanWalker10/smartmall/user_srv/config"
 	"gorm.io/gorm"
-	"mxshop_srvs/user_srv/config"
 )
 
 var (

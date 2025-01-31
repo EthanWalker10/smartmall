@@ -12,12 +12,12 @@ service User{
 }
 
 message PageInfo {
-    uint32 pn = 1;
-    uint32 pSize = 2;
+    uint64 pn = 1;
+    uint64 pSize = 2;
 }
 
 message UserInfoResponse {
-    int32 id = 1;
+    uint64 id = 1;
     string passWord = 2;
     string mobile = 3;
     string nickName = 4;
@@ -37,7 +37,7 @@ message MobileRequest{
 }
 
 message IdRequest {
-    int32 id = 1;
+    uint64 id = 1;
 }
 
 message CreateUserInfo {
@@ -47,7 +47,7 @@ message CreateUserInfo {
 }
 
 message UpdateUserInfo {
-    int32 id = 1;
+    uint64 id = 1;
     string nickName = 2;
     string gender = 3;
     uint64 birthDay = 4;

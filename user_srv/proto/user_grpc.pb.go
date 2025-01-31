@@ -65,7 +65,7 @@ func (c *userClient) GetUserByMobile(ctx context.Context, in *MobileRequest, opt
 	if err != nil {
 		return nil, err
 	}
-	return out, nil 
+	return out, nil
 }
 
 func (c *userClient) GetUserById(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*UserInfoResponse, error) {
