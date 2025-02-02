@@ -1,7 +1,7 @@
 package global
 
 import (
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/config"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/config"
 	"gorm.io/gorm"
 )
 

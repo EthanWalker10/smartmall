@@ -1,8 +1,8 @@
 package global
 
 import (
-	"github.com/EthanWalker10/smartmall/api/user_web/config"
-	"github.com/EthanWalker10/smartmall/api/user_web/proto"
+	"github.com/EthanWalker10/smartmall/api/user-web/config"
+	"github.com/EthanWalker10/smartmall/api/user-web/proto"
 	ut "github.com/go-playground/universal-translator"
 )
 

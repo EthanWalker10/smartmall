@@ -3,7 +3,7 @@ package middlewares
 import (
 	"net/http"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/models"
+	"github.com/EthanWalker10/smartmall/api/user-web/models"
 	"github.com/gin-gonic/gin"
 )
 

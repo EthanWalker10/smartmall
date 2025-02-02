@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/EthanWalker10/smartmall/api/user_web/api"
+	"github.com/EthanWalker10/smartmall/api/user-web/api"
 	"github.com/gin-gonic/gin"
 )
 

@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/middlewares"
-	"github.com/EthanWalker10/smartmall/api/user_web/models"
+	"github.com/EthanWalker10/smartmall/api/user-web/middlewares"
+	"github.com/EthanWalker10/smartmall/api/user-web/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-playground/validator/v10"
 	"github.com/go-redis/redis/v8"
@@ -19,10 +19,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/forms"
-	"github.com/EthanWalker10/smartmall/api/user_web/global"
-	"github.com/EthanWalker10/smartmall/api/user_web/global/reponse"
-	"github.com/EthanWalker10/smartmall/api/user_web/proto"
+	"github.com/EthanWalker10/smartmall/api/user-web/forms"
+	"github.com/EthanWalker10/smartmall/api/user-web/global"
+	"github.com/EthanWalker10/smartmall/api/user-web/global/reponse"
+	"github.com/EthanWalker10/smartmall/api/user-web/proto"
 )
 
 func removeTopStruct(fileds map[string]string) map[string]string {

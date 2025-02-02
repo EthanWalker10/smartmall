@@ -3,8 +3,8 @@ package initialize
 import (
 	"net/http"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/middlewares"
-	"github.com/EthanWalker10/smartmall/api/user_web/router"
+	"github.com/EthanWalker10/smartmall/api/user-web/middlewares"
+	"github.com/EthanWalker10/smartmall/api/user-web/router"
 	"github.com/gin-gonic/gin"
 )
 

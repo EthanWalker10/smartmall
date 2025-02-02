@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/global"
-	"github.com/EthanWalker10/smartmall/api/user_web/models"
+	"github.com/EthanWalker10/smartmall/api/user-web/global"
+	"github.com/EthanWalker10/smartmall/api/user-web/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )

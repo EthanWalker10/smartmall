@@ -8,8 +8,8 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/global"
-	"github.com/EthanWalker10/smartmall/api/user_web/proto"
+	"github.com/EthanWalker10/smartmall/api/user-web/global"
+	"github.com/EthanWalker10/smartmall/api/user-web/proto"
 )
 
 func InitSrvConn() {

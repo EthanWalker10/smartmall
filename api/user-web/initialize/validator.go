@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/global"
+	"github.com/EthanWalker10/smartmall/api/user-web/global"
 
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/en"

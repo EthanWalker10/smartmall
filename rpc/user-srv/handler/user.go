@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/global"
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/model"
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/proto"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/global"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/model"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/proto"
 	"github.com/anaskhan96/go-password-encoder"
 	"github.com/golang/protobuf/ptypes/empty"
 

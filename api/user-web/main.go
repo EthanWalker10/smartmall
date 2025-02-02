@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/utils/register/consul"
+	"github.com/EthanWalker10/smartmall/api/user-web/utils/register/consul"
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/gin-gonic/gin/binding"
@@ -15,10 +15,10 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/global"
-	"github.com/EthanWalker10/smartmall/api/user_web/initialize"
-	"github.com/EthanWalker10/smartmall/api/user_web/utils"
-	myvalidator "github.com/EthanWalker10/smartmall/api/user_web/validator"
+	"github.com/EthanWalker10/smartmall/api/user-web/global"
+	"github.com/EthanWalker10/smartmall/api/user-web/initialize"
+	"github.com/EthanWalker10/smartmall/api/user-web/utils"
+	myvalidator "github.com/EthanWalker10/smartmall/api/user-web/validator"
 )
 
 func main() {

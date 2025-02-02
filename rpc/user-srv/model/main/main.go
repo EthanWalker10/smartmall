@@ -10,7 +10,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/model"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/model"
 	"github.com/anaskhan96/go-password-encoder"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/forms"
+	"github.com/EthanWalker10/smartmall/api/user-web/forms"
 
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/dysmsapi"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 
-	"github.com/EthanWalker10/smartmall/api/user_web/global"
+	"github.com/EthanWalker10/smartmall/api/user-web/global"
 )
 
 func GenerateSmsCode(witdh int) string {

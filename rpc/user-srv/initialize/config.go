@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/global"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/global"
 )
 
 func GetEnvInfo(env string) bool {

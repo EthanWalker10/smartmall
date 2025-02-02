@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/rpc/user_srv/global"
+	"github.com/EthanWalker10/smartmall/rpc/user-srv/global"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
