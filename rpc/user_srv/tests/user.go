@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/EthanWalker10/smartmall/user_srv/proto"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/proto"
 )
 
 var userClient proto.UserClient

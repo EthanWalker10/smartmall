@@ -14,11 +14,11 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/EthanWalker10/smartmall/user_srv/global"
-	"github.com/EthanWalker10/smartmall/user_srv/handler"
-	"github.com/EthanWalker10/smartmall/user_srv/initialize"
-	"github.com/EthanWalker10/smartmall/user_srv/proto"
-	"github.com/EthanWalker10/smartmall/user_srv/utils"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/global"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/handler"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/initialize"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/proto"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/utils"
 	"github.com/hashicorp/consul/api"
 )
 

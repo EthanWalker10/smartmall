@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EthanWalker10/smartmall/user_srv/global"
-	"github.com/EthanWalker10/smartmall/user_srv/model"
-	"github.com/EthanWalker10/smartmall/user_srv/proto"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/global"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/model"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/proto"
 	"github.com/anaskhan96/go-password-encoder"
 	"github.com/golang/protobuf/ptypes/empty"
 
@@ -18,23 +18,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserServer struct{
+type UserServer struct {
 	// 提供所有方法的默认处理, 在 proto 文件中新增方法时能够向前兼容而不报错
-	// value 而非 pointer, 避免未实例化的指针导致 nil pointer dereference 
+	// value 而非 pointer, 避免未实例化的指针导致 nil pointer dereference
 	proto.UnimplementedUserServer
 }
 
 // 由于 proto.UserInfoResponse 中包含锁, 直接返回结构体变量副本会报错, 所以需要使用指针
-func ModelToRsponse(user model.User) *proto.UserInfoResponse{
+func ModelToRsponse(user model.User) *proto.UserInfoResponse {
 	//在grpc的message中字段有默认值，不能随便赋值nil进去，容易出错
 	//这里要搞清， 哪些字段是有默认值
 	userInfoRsp := &proto.UserInfoResponse{
 		Id:       uint64(user.ID),
 		PassWord: user.Password,
 		NickName: user.NickName,
-		Gender: user.Gender,
-		Role: int32(user.Role),
-		Mobile: user.Mobile,
+		Gender:   user.Gender,
+		Role:     int32(user.Role),
+		Mobile:   user.Mobile,
 	}
 	// user.Birthday 是 *time.Time 类型，可以为 nil; 如果给 userInfoRsp 中的字段赋 nil, 会报错
 	if user.Birthday != nil {
@@ -43,9 +43,9 @@ func ModelToRsponse(user model.User) *proto.UserInfoResponse{
 	return userInfoRsp
 }
 
-//分页函数, 指示从 offset 偏移量开始，取 pageSize 条数据
+// 分页函数, 指示从 offset 偏移量开始，取 pageSize 条数据
 func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
-	return func (db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
 		if page == 0 {
 			page = 1
 		}
@@ -63,7 +63,7 @@ func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 }
 
 // 分页查询
-func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*proto.UserListResponse, error){
+func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*proto.UserListResponse, error) {
 	var users []model.User
 	result := global.DB.Find(&users)
 	if result.Error != nil {
@@ -75,16 +75,16 @@ func (s *UserServer) GetUserList(ctx context.Context, req *proto.PageInfo) (*pro
 
 	global.DB.Scopes(Paginate(int(req.Pn), int(req.PSize))).Find(&users)
 
-	for _, user := range users{
+	for _, user := range users {
 		userInfoRsp := ModelToRsponse(user)
 		rsp.Data = append(rsp.Data, userInfoRsp)
 	}
 	return rsp, nil
 }
 
-func (s *UserServer) GetUserByMobile(ctx context.Context, req *proto.MobileRequest) (*proto.UserInfoResponse, error){
+func (s *UserServer) GetUserByMobile(ctx context.Context, req *proto.MobileRequest) (*proto.UserInfoResponse, error) {
 	var user model.User
-	result := global.DB.Where(&model.User{Mobile:req.Mobile}).First(&user)
+	result := global.DB.Where(&model.User{Mobile: req.Mobile}).First(&user)
 	if result.RowsAffected == 0 {
 		return nil, status.Errorf(codes.NotFound, "用户不存在")
 	}
@@ -96,7 +96,7 @@ func (s *UserServer) GetUserByMobile(ctx context.Context, req *proto.MobileReque
 	return userInfoRsp, nil
 }
 
-func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*proto.UserInfoResponse, error){
+func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*proto.UserInfoResponse, error) {
 	var user model.User
 	result := global.DB.First(&user, req.Id)
 	if result.RowsAffected == 0 {
@@ -110,9 +110,9 @@ func (s *UserServer) GetUserById(ctx context.Context, req *proto.IdRequest) (*pr
 	return userInfoRsp, nil
 }
 
-func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) (*proto.UserInfoResponse, error){
+func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) (*proto.UserInfoResponse, error) {
 	var user model.User
-	result := global.DB.Where(&model.User{Mobile:req.Mobile}).First(&user)
+	result := global.DB.Where(&model.User{Mobile: req.Mobile}).First(&user)
 	if result.RowsAffected == 1 {
 		return nil, status.Errorf(codes.AlreadyExists, "用户已存在")
 	}
@@ -122,11 +122,11 @@ func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 
 	// 密码加密
 	options := &password.Options{
-		SaltLen:    16,
-		Iterations: 100,     // 迭代次数为 100
-		KeyLen:     32,      // 密钥的长度为 32
+		SaltLen:      16,
+		Iterations:   100, // 迭代次数为 100
+		KeyLen:       32,  // 密钥的长度为 32
 		HashFunction: sha512.New,
-	}	
+	}
 	salt, encodedPwd := password.Encode(req.PassWord, options)
 	user.Password = fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
 
@@ -141,7 +141,7 @@ func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 	return userInfoRsp, nil
 }
 
-func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) (*empty.Empty, error){
+func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) (*empty.Empty, error) {
 	var user model.User
 	result := global.DB.First(&user, req.Id)
 	if result.RowsAffected == 0 {
@@ -161,11 +161,11 @@ func (s *UserServer) UpdateUser(ctx context.Context, req *proto.UpdateUserInfo) 
 }
 
 // 校验密码
-func (s *UserServer) CheckPassWord(ctx context.Context, req *proto.PasswordCheckInfo) (*proto.CheckResponse, error){
+func (s *UserServer) CheckPassWord(ctx context.Context, req *proto.PasswordCheckInfo) (*proto.CheckResponse, error) {
 	options := &password.Options{
-		SaltLen:    16,
-		Iterations: 100,
-		KeyLen:     32,
+		SaltLen:      16,
+		Iterations:   100,
+		KeyLen:       32,
 		HashFunction: sha512.New,
 	}
 	passwordInfo := strings.Split(req.EncryptedPassword, "$")

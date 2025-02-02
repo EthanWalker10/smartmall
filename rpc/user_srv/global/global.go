@@ -1,14 +1,14 @@
 package global
 
 import (
-	"github.com/EthanWalker10/smartmall/user_srv/config"
+	"github.com/EthanWalker10/smartmall/rpc/user_srv/config"
 	"gorm.io/gorm"
 )
 
 var (
-	DB *gorm.DB
+	DB           *gorm.DB
 	ServerConfig config.ServerConfig
-	NacosConfig config.NacosConfig
+	NacosConfig  config.NacosConfig
 )
 
 //func init() {
