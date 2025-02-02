@@ -1,19 +1,20 @@
 package initialize
 
 import (
+	"fmt"
 	"log"
-	"mxshop_srvs/user_srv/global"
 	"os"
 	"time"
-	"fmt"
 
+	"github.com/EthanWalker10/smartmall/user_srv/global"
+
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"gorm.io/driver/mysql"
 )
 
-func InitDB(){
+func InitDB() {
 	c := global.ServerConfig.MysqlInfo
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		c.User, c.Password, c.Host, c.Port, c.Name)
@@ -22,7 +23,7 @@ func InitDB(){
 		logger.Config{
 			SlowThreshold: time.Second,   // 慢 SQL 阈值
 			LogLevel:      logger.Silent, // Log level
-			Colorful:      true,         // 禁用彩色打印
+			Colorful:      true,          // 禁用彩色打印
 		},
 	)
 

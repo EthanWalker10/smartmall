@@ -18,7 +18,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserServer struct{}
+type UserServer struct{
+	// 提供所有方法的默认处理, 在 proto 文件中新增方法时能够向前兼容而不报错
+	// value 而非 pointer, 避免未实例化的指针导致 nil pointer dereference 
+	proto.UnimplementedUserServer
+}
 
 // 由于 proto.UserInfoResponse 中包含锁, 直接返回结构体变量副本会报错, 所以需要使用指针
 func ModelToRsponse(user model.User) *proto.UserInfoResponse{

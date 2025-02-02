@@ -5,19 +5,20 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
+	"io"
+	"log"
+	"os"
+	"time"
+
+	"github.com/EthanWalker10/smartmall/user_srv/model"
 	"github.com/anaskhan96/go-password-encoder"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"io"
-	"log"
-	"mxshop_srvs/user_srv/model"
-	"os"
-	"time"
 )
 
-func genMd5(code string) string{
+func genMd5(code string) string {
 	Md5 := md5.New()
 	_, _ = io.WriteString(Md5, code)
 	return hex.EncodeToString(Md5.Sum(nil))
@@ -29,9 +30,9 @@ func main() {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second,   // 慢 SQL 阈值
+			SlowThreshold: time.Second, // 慢 SQL 阈值
 			LogLevel:      logger.Info, // Log level
-			Colorful:      true,         // 禁用彩色打印
+			Colorful:      true,        // 禁用彩色打印
 		},
 	)
 
@@ -51,10 +52,10 @@ func main() {
 	newPassword := fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
 	fmt.Println(newPassword)
 
-	for i := 0; i<10; i++ {
+	for i := 0; i < 10; i++ {
 		user := model.User{
-			NickName: fmt.Sprintf("bobby%d",i),
-			Mobile: fmt.Sprintf("1878222222%d",i),
+			NickName: fmt.Sprintf("bobby%d", i),
+			Mobile:   fmt.Sprintf("1878222222%d", i),
 			Password: newPassword,
 		}
 		db.Save(&user)
