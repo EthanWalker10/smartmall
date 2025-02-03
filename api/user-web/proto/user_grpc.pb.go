@@ -32,7 +32,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
-	GetUserList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*UserListResonse, error)
+	GetUserList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*UserListResponse, error)
 	GetUserByMobile(ctx context.Context, in *MobileRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 	GetUserById(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*UserInfoResponse, error)
 	CreateUser(ctx context.Context, in *CreateUserInfo, opts ...grpc.CallOption) (*UserInfoResponse, error)
@@ -48,9 +48,9 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
 }
 
-func (c *userClient) GetUserList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*UserListResonse, error) {
+func (c *userClient) GetUserList(ctx context.Context, in *PageInfo, opts ...grpc.CallOption) (*UserListResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserListResonse)
+	out := new(UserListResponse)
 	err := c.cc.Invoke(ctx, User_GetUserList_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (c *userClient) CheckPassWord(ctx context.Context, in *PasswordCheckInfo, o
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 type UserServer interface {
-	GetUserList(context.Context, *PageInfo) (*UserListResonse, error)
+	GetUserList(context.Context, *PageInfo) (*UserListResponse, error)
 	GetUserByMobile(context.Context, *MobileRequest) (*UserInfoResponse, error)
 	GetUserById(context.Context, *IdRequest) (*UserInfoResponse, error)
 	CreateUser(context.Context, *CreateUserInfo) (*UserInfoResponse, error)
@@ -128,7 +128,7 @@ type UserServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServer struct{}
 
-func (UnimplementedUserServer) GetUserList(context.Context, *PageInfo) (*UserListResonse, error) {
+func (UnimplementedUserServer) GetUserList(context.Context, *PageInfo) (*UserListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserList not implemented")
 }
 func (UnimplementedUserServer) GetUserByMobile(context.Context, *MobileRequest) (*UserInfoResponse, error) {
