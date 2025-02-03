@@ -33,8 +33,8 @@ func removeTopStruct(fileds map[string]string) map[string]string {
 	return rsp
 }
 
+// translate grpc code to http status
 func HandleGrpcErrorToHttp(err error, c *gin.Context) {
-	//将grpc的code转换成http的状态码
 	if err != nil {
 		if e, ok := status.FromError(err); ok {
 			switch e.Code() {
@@ -44,15 +44,15 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 				})
 			case codes.Internal:
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"msg:": "内部错误",
+					"msg:": "internal server error",
 				})
 			case codes.InvalidArgument:
 				c.JSON(http.StatusBadRequest, gin.H{
-					"msg": "参数错误",
+					"msg": "parameter error",
 				})
 			case codes.Unavailable:
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"msg": "用户服务不可用",
+					"msg": "service unavailable",
 				})
 			default:
 				c.JSON(http.StatusInternalServerError, gin.H{
@@ -78,11 +78,9 @@ func HandleValidatorError(c *gin.Context, err error) {
 }
 
 func GetUserList(ctx *gin.Context) {
-	//拨号连接用户grpc服务器 跨域的问题 - 后端解决 也可以前端来解决
 	claims, _ := ctx.Get("claims")
 	currentUser := claims.(*models.CustomClaims)
-	zap.S().Infof("访问用户: %d", currentUser.ID)
-	//生成grpc的client并调用接口
+	zap.S().Infof("Current user: %d", currentUser.ID)
 
 	pn := ctx.DefaultQuery("pn", "0")
 	pnInt, _ := strconv.Atoi(pn)
@@ -90,11 +88,11 @@ func GetUserList(ctx *gin.Context) {
 	pSizeInt, _ := strconv.Atoi(pSize)
 
 	rsp, err := global.UserSrvClient.GetUserList(context.Background(), &proto.PageInfo{
-		Pn:    uint32(pnInt),
-		PSize: uint32(pSizeInt),
+		Pn:    uint64(pnInt),
+		PSize: uint64(pSizeInt),
 	})
 	if err != nil {
-		zap.S().Errorw("[GetUserList] 查询 【用户列表】失败")
+		zap.S().Errorw("[GetUserList] failed to get userlist")
 		HandleGrpcErrorToHttp(err, ctx)
 		return
 	}
@@ -120,7 +118,7 @@ func GetUserList(ctx *gin.Context) {
 }
 
 func PassWordLogin(c *gin.Context) {
-	//表单验证
+	// form validation
 	passwordLoginForm := forms.PassWordLoginForm{}
 	if err := c.ShouldBind(&passwordLoginForm); err != nil {
 		HandleValidatorError(c, err)
@@ -129,12 +127,12 @@ func PassWordLogin(c *gin.Context) {
 
 	if store.Verify(passwordLoginForm.CaptchaId, passwordLoginForm.Captcha, false) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"captcha": "验证码错误",
+			"captcha": "Chaptcha error",
 		})
 		return
 	}
 
-	//登录的逻辑
+	// login
 	if rsp, err := global.UserSrvClient.GetUserByMobile(context.Background(), &proto.MobileRequest{
 		Mobile: passwordLoginForm.Mobile,
 	}); err != nil {
@@ -142,42 +140,41 @@ func PassWordLogin(c *gin.Context) {
 			switch e.Code() {
 			case codes.NotFound:
 				c.JSON(http.StatusBadRequest, map[string]string{
-					"mobile": "用户不存在",
+					"mobile": "User not found",
 				})
 			default:
 				c.JSON(http.StatusInternalServerError, map[string]string{
-					"mobile": "登录失败",
+					"mobile": "Failed to login",
 				})
 			}
 			return
 		}
 	} else {
-		//只是查询到用户了而已，并没有检查密码
 		if passRsp, pasErr := global.UserSrvClient.CheckPassWord(context.Background(), &proto.PasswordCheckInfo{
 			Password:          passwordLoginForm.PassWord,
 			EncryptedPassword: rsp.PassWord,
 		}); pasErr != nil {
 			c.JSON(http.StatusInternalServerError, map[string]string{
-				"password": "登录失败",
+				"password": "Failed to login",
 			})
 		} else {
 			if passRsp.Success {
-				//生成token
+				// generate token
 				j := middlewares.NewJWT()
 				claims := models.CustomClaims{
 					ID:          uint(rsp.Id),
 					NickName:    rsp.NickName,
 					AuthorityId: uint(rsp.Role),
 					StandardClaims: jwt.StandardClaims{
-						NotBefore: time.Now().Unix(),               //签名的生效时间
-						ExpiresAt: time.Now().Unix() + 60*60*24*30, //30天过期
+						NotBefore: time.Now().Unix(),               // Effective time of signature
+						ExpiresAt: time.Now().Unix() + 60*60*24*30, // Expires in 30 days
 						Issuer:    "imooc",
 					},
 				}
 				token, err := j.CreateToken(claims)
 				if err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{
-						"msg": "生成token失败",
+						"msg": "Failed to generate token",
 					})
 					return
 				}
@@ -190,7 +187,7 @@ func PassWordLogin(c *gin.Context) {
 				})
 			} else {
 				c.JSON(http.StatusBadRequest, map[string]string{
-					"msg": "登录失败",
+					"msg": "Failed to login",
 				})
 			}
 		}
@@ -198,27 +195,26 @@ func PassWordLogin(c *gin.Context) {
 }
 
 func Register(c *gin.Context) {
-	//用户注册
 	registerForm := forms.RegisterForm{}
 	if err := c.ShouldBind(&registerForm); err != nil {
 		HandleValidatorError(c, err)
 		return
 	}
 
-	//验证码
+	// chaptcha
 	rdb := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", global.ServerConfig.RedisInfo.Host, global.ServerConfig.RedisInfo.Port),
 	})
 	value, err := rdb.Get(context.Background(), registerForm.Mobile).Result()
 	if err == redis.Nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"code": "验证码错误",
+			"code": "chaptcha error",
 		})
 		return
 	} else {
 		if value != registerForm.Code {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"code": "验证码错误",
+				"code": "chaptcha error",
 			})
 			return
 		}
@@ -231,7 +227,7 @@ func Register(c *gin.Context) {
 	})
 
 	if err != nil {
-		zap.S().Errorf("[Register] 查询 【新建用户失败】失败: %s", err.Error())
+		zap.S().Errorf("[Register] failed to create a new user: %s", err.Error())
 		HandleGrpcErrorToHttp(err, c)
 		return
 	}
@@ -242,15 +238,15 @@ func Register(c *gin.Context) {
 		NickName:    user.NickName,
 		AuthorityId: uint(user.Role),
 		StandardClaims: jwt.StandardClaims{
-			NotBefore: time.Now().Unix(),               //签名的生效时间
-			ExpiresAt: time.Now().Unix() + 60*60*24*30, //30天过期
+			NotBefore: time.Now().Unix(),               // Effective time of signature
+			ExpiresAt: time.Now().Unix() + 60*60*24*30, // Expires in 30 days
 			Issuer:    "imooc",
 		},
 	}
 	token, err := j.CreateToken(claims)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"msg": "生成token失败",
+			"msg": "Failed to generate token",
 		})
 		return
 	}
@@ -266,10 +262,10 @@ func Register(c *gin.Context) {
 func GetUserDetail(ctx *gin.Context) {
 	claims, _ := ctx.Get("claims")
 	currentUser := claims.(*models.CustomClaims)
-	zap.S().Infof("访问用户: %d", currentUser.ID)
+	zap.S().Infof("Current user: %d", currentUser.ID)
 
 	rsp, err := global.UserSrvClient.GetUserById(context.Background(), &proto.IdRequest{
-		Id: int32(currentUser.ID),
+		Id: uint64(currentUser.ID),
 	})
 	if err != nil {
 		HandleGrpcErrorToHttp(err, ctx)
@@ -292,13 +288,13 @@ func UpdateUser(ctx *gin.Context) {
 
 	claims, _ := ctx.Get("claims")
 	currentUser := claims.(*models.CustomClaims)
-	zap.S().Infof("访问用户: %d", currentUser.ID)
+	zap.S().Infof("Current user: %d", currentUser.ID)
 
-	//将前端传递过来的日期格式转换成int
-	loc, _ := time.LoadLocation("Local") //local的L必须大写
+	// translate date format to int
+	loc, _ := time.LoadLocation("Local") // L has to be uppercase
 	birthDay, _ := time.ParseInLocation("2006-01-02", updateUserForm.Birthday, loc)
 	_, err := global.UserSrvClient.UpdateUser(context.Background(), &proto.UpdateUserInfo{
-		Id:       int32(currentUser.ID),
+		Id:       uint64(currentUser.ID),
 		NickName: updateUserForm.Name,
 		Gender:   updateUserForm.Gender,
 		BirthDay: uint64(birthDay.Unix()),

@@ -13,7 +13,7 @@ func (j JsonTime) MarshalJSON() ([]byte, error){
 }
 
 type UserResponse struct {
-	Id int32 `json:"id"`
+	Id uint64 `json:"id"`
 	NickName string `json:"name"`
 	//Birthday string `json:"birthday"`
 	Birthday JsonTime `json:"birthday"`
