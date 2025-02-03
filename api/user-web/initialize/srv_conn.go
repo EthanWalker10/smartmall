@@ -7,16 +7,18 @@ import (
 	_ "github.com/mbobakov/grpc-consul-resolver" // It's important
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/EthanWalker10/smartmall/api/user-web/global"
 	"github.com/EthanWalker10/smartmall/api/user-web/proto"
 )
 
+// initialize global variable `UserSrvClient``
 func InitSrvConn() {
 	consulInfo := global.ServerConfig.ConsulInfo
-	userConn, err := grpc.Dial(
-		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.UserSrvInfo.Name),
-		grpc.WithInsecure(),
+	userConn, err := grpc.NewClient(
+		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulInfo.Host, consulInfo.Port, global.ServerConfig.UserSrvInfo.Name), 
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultServiceConfig(`{"loadBalancingPolicy": "round_robin"}`),
 	)
 	if err != nil {
@@ -56,7 +58,10 @@ func InitSrvConn2() {
 	}
 
 	//拨号连接用户grpc服务器 跨域的问题 - 后端解决 也可以前端来解决
-	userConn, err := grpc.Dial(fmt.Sprintf("%s:%d", userSrvHost, userSrvPort), grpc.WithInsecure())
+	userConn, err := grpc.NewClient(
+		fmt.Sprintf("%s:%d", userSrvHost, userSrvPort), 
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		zap.S().Errorw("[GetUserList] 连接 【用户服务失败】",
 			"msg", err.Error(),
