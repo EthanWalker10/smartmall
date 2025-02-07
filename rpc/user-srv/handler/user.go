@@ -18,6 +18,10 @@ import (
 	"gorm.io/gorm"
 )
 
+/* implement the UserServer interface
+ * handle all requests from client
+ */
+
 type UserServer struct {
 	// 提供所有方法的默认处理, 在 proto 文件中新增方法时能够向前兼容而不报错
 	// value 而非 pointer, 避免未实例化的指针导致 nil pointer dereference

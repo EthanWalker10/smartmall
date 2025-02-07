@@ -46,9 +46,12 @@ func main() {
 		}
 	}
 
-	//注册验证器
+	// register gin’s validator of mobile
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		// register custom validator for 'mobile' tag
 		_ = v.RegisterValidation("mobile", myvalidator.ValidateMobile)
+		// register translation for 'mobile' tag
+		// cause the default translator doesn’t exert an effext in the validator we register above
 		_ = v.RegisterTranslation("mobile", global.Trans, func(ut ut.Translator) error {
 			return ut.Add("mobile", "{0} 非法的手机号码!", true) // see universal-translator for details
 		}, func(ut ut.Translator, fe validator.FieldError) string {

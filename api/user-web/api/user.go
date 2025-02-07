@@ -25,6 +25,14 @@ import (
 	"github.com/EthanWalker10/smartmall/api/user-web/proto"
 )
 
+/* implement all logics in UserClient interface
+ * but not implemente the interface
+ * because the interface is implemented in proto
+ * we just handle the request and invoke the interface
+ */
+
+
+
 func removeTopStruct(fileds map[string]string) map[string]string {
 	rsp := map[string]string{}
 	for field, err := range fileds {
