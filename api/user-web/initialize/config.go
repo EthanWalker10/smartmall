@@ -14,13 +14,15 @@ import (
 )
 
 func GetEnvInfo(env string) bool {
+	// //刚才设置的环境变量 想要生效 我们必须得重启goland
+	// restart vscode for env `SMARTMALL_DEBUG` to take effect
 	viper.AutomaticEnv()
 	return viper.GetBool(env)
-	//刚才设置的环境变量 想要生效 我们必须得重启goland
+	
 }
 
 func InitConfig() {
-	debug := GetEnvInfo("MXSHOP_DEBUG")
+	debug := GetEnvInfo("SMARTMALL_DEBUG")
 	configFilePrefix := "config"
 	configFileName := fmt.Sprintf("user-web/%s-pro.yaml", configFilePrefix)
 	if debug {
@@ -28,7 +30,7 @@ func InitConfig() {
 	}
 
 	v := viper.New()
-	//文件的路径如何设置
+	// notice the filepath
 	v.SetConfigFile(configFileName)
 	if err := v.ReadInConfig(); err != nil {
 		panic(err)

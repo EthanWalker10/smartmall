@@ -26,6 +26,7 @@ type RedisConfig struct {
 	Expire int    `mapstructure:"expire" json:"expire"`
 }
 
+// global config
 type ServerConfig struct {
 	Name        string        `mapstructure:"name" json:"name"`
 	Host        string         `mapstructure:"host" json:"host"`
